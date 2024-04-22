@@ -6,20 +6,18 @@ BLEOTAClass BLEOTA;
 
 class recvFWCallback : public BLECharacteristicCallbacks {
   void onWrite(BLECharacteristic* pCharacteristic) {
-    uint8_t* data;
     if (pCharacteristic->getDataLength() >= 4) {
-      data = pCharacteristic->getValue<uint8_t*>();
-      BLEOTA.FWHandler(pCharacteristic, data, pCharacteristic->getDataLength());
+      NimBLEAttValue data = pCharacteristic->getValue();
+      BLEOTA.FWHandler(pCharacteristic, (uint8_t*)data.c_str(), pCharacteristic->getDataLength());
     }
   }
 };
 
 class commandCallback : public BLECharacteristicCallbacks {
   void onWrite(BLECharacteristic* pCharacteristic) {
-    uint8_t* data;
     if (pCharacteristic->getDataLength() >= 20) {
-      data = pCharacteristic->getValue<uint8_t*>();
-      BLEOTA.CommandHandler(pCharacteristic, data, pCharacteristic->getDataLength());
+      NimBLEAttValue data = pCharacteristic->getValue();
+      BLEOTA.CommandHandler(pCharacteristic, (uint8_t*)data.c_str(), pCharacteristic->getDataLength());
     }
   }
 };
