@@ -7,9 +7,9 @@ BLEOTAClass BLEOTA;
 class recvFWCallback : public BLECharacteristicCallbacks {
   void onWrite(BLECharacteristic* pCharacteristic) {
     uint8_t* data;
-    if (pCharacteristic->getLength() >= 4) {
-      data = pCharacteristic->getData();
-      BLEOTA.FWHandler(pCharacteristic, data, pCharacteristic->getLength());
+    if (pCharacteristic->getDataLength() >= 4) {
+      data = pCharacteristic->getValue<uint8_t*>();
+      BLEOTA.FWHandler(pCharacteristic, data, pCharacteristic->getDataLength());
     }
   }
 };
@@ -17,9 +17,9 @@ class recvFWCallback : public BLECharacteristicCallbacks {
 class commandCallback : public BLECharacteristicCallbacks {
   void onWrite(BLECharacteristic* pCharacteristic) {
     uint8_t* data;
-    if (pCharacteristic->getLength() >= 20) {
-      data = pCharacteristic->getData();
-      BLEOTA.CommandHandler(pCharacteristic, data, pCharacteristic->getLength());
+    if (pCharacteristic->getDataLength() >= 20) {
+      data = pCharacteristic->getValue<uint8_t*>();
+      BLEOTA.CommandHandler(pCharacteristic, data, pCharacteristic->getDataLength());
     }
   }
 };
@@ -77,45 +77,45 @@ void BLEOTAClass::init(void) {
   // Create a BLE Characteristic
   _pRecvFWchar = _pBLEOTAService->createCharacteristic(
     RECV_FW_UUID,
-    BLECharacteristic::PROPERTY_WRITE | BLECharacteristic::PROPERTY_NOTIFY | BLECharacteristic::PROPERTY_INDICATE);
+    NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE);
   _pRecvFWchar->setCallbacks(new recvFWCallback());
 
   _pCommandchar = _pBLEOTAService->createCharacteristic(
     COMMAND_UUID,
-    BLECharacteristic::PROPERTY_WRITE | BLECharacteristic::PROPERTY_NOTIFY | BLECharacteristic::PROPERTY_INDICATE);
+    NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::NOTIFY | NIMBLE_PROPERTY::INDICATE);
 
   _pCommandchar->setCallbacks(new commandCallback());
 
   // Create a BLE Descriptor
-  _pRecvFWchar->addDescriptor(new BLE2902());
-  _pCommandchar->addDescriptor(new BLE2902());
+  // _pRecvFWchar->addDescriptor(new BLE2902());
+  // _pCommandchar->addDescriptor(new BLE2902());
 
   // Create the DIS Service
   if ((_model != "") || (_serial_num != "") || (_fw_version != "") || (_hw_version != "") || (_manufacturer != ""))
     _pDISService = _pServer->createService(DIS_SERVICE_UUID);
 
   if (_model != "") {
-    _pModelchar = _pDISService->createCharacteristic(DIS_MODEL_CHAR_UUID, BLECharacteristic::PROPERTY_READ);
+    _pModelchar = _pDISService->createCharacteristic(DIS_MODEL_CHAR_UUID, NIMBLE_PROPERTY::READ);
     _pModelchar->setValue(_model.c_str());
   }
 
   if (_serial_num != "") {
-    _pSerialNumchar = _pDISService->createCharacteristic(DIS_SERIAL_N_CHAR_UUID, BLECharacteristic::PROPERTY_READ);
+    _pSerialNumchar = _pDISService->createCharacteristic(DIS_SERIAL_N_CHAR_UUID, NIMBLE_PROPERTY::READ);
     _pSerialNumchar->setValue(_serial_num.c_str());
   }
 
   if (_fw_version != "") {
-    _pFWVerchar = _pDISService->createCharacteristic(DIS_FW_VER_CHAR_UUID, BLECharacteristic::PROPERTY_READ);
+    _pFWVerchar = _pDISService->createCharacteristic(DIS_FW_VER_CHAR_UUID, NIMBLE_PROPERTY::READ);
     _pFWVerchar->setValue(_fw_version.c_str());
   }
 
   if (_hw_version != "") {
-    _pHWVerchar = _pDISService->createCharacteristic(DIS_HW_VERSION_CHAR_UUID, BLECharacteristic::PROPERTY_READ);
+    _pHWVerchar = _pDISService->createCharacteristic(DIS_HW_VERSION_CHAR_UUID, NIMBLE_PROPERTY::READ);
     _pHWVerchar->setValue(_hw_version.c_str());
   }
 
   if (_manufacturer != "") {
-    _pManufacturerchar = _pDISService->createCharacteristic(DIS_MNF_CHAR_UUID, BLECharacteristic::PROPERTY_READ);
+    _pManufacturerchar = _pDISService->createCharacteristic(DIS_MNF_CHAR_UUID, NIMBLE_PROPERTY::READ);
     _pManufacturerchar->setValue(_manufacturer.c_str());
   }
   _pBLEOTAService->start();
