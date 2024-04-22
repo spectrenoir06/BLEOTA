@@ -1,10 +1,12 @@
 #ifndef BLEOTA_H
 #define BLEOTA_H
 #include <Arduino.h>
-#include <BLEDevice.h>
-#include <BLEServer.h>
-#include <BLEUtils.h>
-#include <BLE2902.h>
+// #include <BLEDevice.h>
+// #include <BLEServer.h>
+// #include <BLEUtils.h>
+// #include <BLE2902.h>
+#include <NimBLEDevice.h>
+
 #include <Update.h>
 #include "mbedtls/pk.h"
 #include "mbedtls/sha256.h"
